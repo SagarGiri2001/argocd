@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress
+spec:
+  selector:
+    matchLabels:
+      version: v1           # Pod label to be used by Service to select the pods from this deployment
+  replicas: 1                 # number of replica of the Pods
+  template:
+    metadata:
+      labels:
+        env: dev         # Pod's label
+        app: wordpress
+        version: v1
+    spec:
+      containers:
+      - name: wordpress-container
+        image: wordpress:latest     # which image it will use
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+        ports:
+        - containerPort: 80     # Port exposed by container inside the Pod
+        envFrom:
+          - configMapRef:
+              name: wordpress-configmap
+              optional: false
+          - secretRef:
+              name: wordpress-secret
+              optional: false
